@@ -1,10 +1,11 @@
-package com.getmecab.customerapp;
+package com.getmecab.customerapp.activity;
 
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Handler;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+
+import com.getmecab.customerapp.R;
 
 public class SplashScreen extends Activity {
 
