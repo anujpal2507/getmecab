@@ -3,4 +3,9 @@
     <color name="colorPrimary">#3F51B5</color>
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
+    <color name="appBackGround">#330000</color>
+    <color name="loginBackground">#D1BAC2</color>
+    <color name="button_fore_color">#FBFCFC</color>
+    <color name="button_back_ground_color">#330000</color>              <!--#ffffcc-->
+    <color name="button_back_ground_color1">#34495E</color>              <!--#ffffcc-->
 </resources>
