@@ -2,6 +2,7 @@ package com.getmecab.customerapp.activity;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -15,6 +16,7 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.getmecab.customerapp.Home;
 import com.getmecab.customerapp.R;
 import com.getmecab.customerapp.database.LocalData;
 import com.getmecab.customerapp.database.LocalDataDB;
@@ -85,7 +87,10 @@ public class SignUp extends Activity {
     }
 
     public void registerNewUser(View view) {
-        if (termsConditions.isChecked()) {
+        Intent intent = new Intent(SignUp.this, Home.class);
+        startActivity(intent);
+        finish();
+        /*if (termsConditions.isChecked()) {
             String name, emailId, phoneNumber, userPassword, confirmUserPassword;
             boolean isCorrectEntries = true;
             name = fullName.getText().toString();
@@ -119,7 +124,7 @@ public class SignUp extends Activity {
             }
         } else {
             GlobalFunctions.showToast(context, "Please confirm terms and conditions!!!");
-        }
+        }*/
     }
 
     private class RegisterUser extends AsyncTask<String, String, Boolean> {
@@ -173,6 +178,9 @@ public class SignUp extends Activity {
                 confirmPassword.setText("");
                 termsConditions.setChecked(false);
                 GlobalFunctions.showToast(context, "Congratulations your are successfully registered.");
+                Intent intent = new Intent(SignUp.this, Home.class);
+                startActivity(intent);
+                finish();
             }
         }
     }

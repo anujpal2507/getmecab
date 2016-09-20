@@ -34,7 +34,7 @@ public class RoundTripDataDB extends SQLiteOpenHelper implements GlobalConstants
         String CREATE_TABLE_ROUNDTRIPDATA = "CREATE TABLE IF NOT EXISTS " + TABLE_ROUNDTRIPDATA + "("
                 + id + " INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,"
                 + source + " TEXT,"
-                + destination + "TEXT)";
+                + destination + " TEXT)";
         sqLiteDatabase.execSQL(CREATE_TABLE_ROUNDTRIPDATA);
     }
 

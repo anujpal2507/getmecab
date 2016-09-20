@@ -8,4 +8,6 @@
     <color name="button_fore_color">#FBFCFC</color>
     <color name="button_back_ground_color">#330000</color>              <!--#ffffcc-->
     <color name="button_back_ground_color1">#34495E</color>              <!--#ffffcc-->
+    <color name="radioButtonColorChecked">#0000ff</color>
+    <color name="radioButtonColorUnChecked">#b3b3b3</color>
 </resources>
