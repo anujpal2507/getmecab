@@ -10,4 +10,8 @@
     <color name="button_back_ground_color1">#34495E</color>              <!--#ffffcc-->
     <color name="radioButtonColorChecked">#0000ff</color>
     <color name="radioButtonColorUnChecked">#b3b3b3</color>
+    <color name="homeBackGround">#F1F5F8</color>
+    <color name="calendarBackGround">#F1F5F8</color>
+    <color name="noInternetBackGround">#E4E5EB</color>
+    <color name="noInternetTextColor">#6C6E6F</color>
 </resources>

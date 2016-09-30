@@ -9,8 +9,9 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context="com.getmecab.customerapp.Home"
-    tools:showIn="@layout/app_bar_home">
+    tools:context=".activity.Home"
+    tools:showIn="@layout/app_bar_home"
+    android:background="@color/homeBackGround">
 
     <LinearLayout
         android:id="@+id/home_tripRadioLinearLayout"
@@ -24,39 +25,42 @@
             android:id="@+id/home_tripRadioGroup"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_weight="1"
             android:orientation="horizontal"
-            android:weightSum="3"
-            android:layout_weight="1">
+            android:weightSum="3">
+
             <RadioButton
                 android:id="@+id/home_roundTripRadioButton"
+                style="@style/radioButtonStyle"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:text="Round-Trip&#160;&#160;&#160;&#160;"
-                style="@style/radioButtonStyle"
+                android:layout_weight="1"
                 android:checked="true"
                 android:paddingLeft="5dp"
                 android:paddingRight="5dp"
-                android:layout_weight="1"/>
+                android:text="Round-Trip&#160;&#160;&#160;&#160;"/>
+
             <RadioButton
                 android:id="@+id/home_oneWayTripRadioButton"
+                style="@style/radioButtonStyle"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                style="@style/radioButtonStyle"
-                android:text="One-Way&#160;&#160;&#160;&#160;&#160;&#160;&#160;"
+                android:layout_weight="1"
                 android:checked="false"
                 android:paddingLeft="5dp"
                 android:paddingRight="5dp"
-                android:layout_weight="1"/>
+                android:text="One-Way&#160;&#160;&#160;&#160;&#160;&#160;&#160;"/>
+
             <RadioButton
                 android:id="@+id/home_localTripRadioButton"
+                style="@style/radioButtonStyle"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                style="@style/radioButtonStyle"
-                android:text="Local-Full Day"
+                android:layout_weight="1"
                 android:checked="false"
                 android:paddingLeft="5dp"
                 android:paddingRight="5dp"
-                android:layout_weight="1"/>
+                android:text="Local-Full Day" />
         </RadioGroup>
     </LinearLayout>
 
@@ -72,24 +76,158 @@
             android:id="@+id/sourceCityLinearLayout"
             android:layout_width="match_parent"
             android:layout_height="0dp"
+            android:layout_marginTop="5dp"
             android:layout_weight="1"
             android:orientation="vertical">
+
             <TextView
                 android:id="@+id/sourceCityTextView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text=""
-                android:background="@null"/>
+                android:background="@null"
+                android:text="" />
+
             <EditText
                 android:id="@+id/sourceCityEditText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@drawable/edit_text_border"
-                android:text=""
+                android:cursorVisible="false"
                 android:hint="PickUp City"
-                android:cursorVisible="false"/>
+                android:text=""
+                android:onClick="sourceCityList"
+                android:clickable="true"/>
+
+            <AutoCompleteTextView
+                android:id="@+id/sourceCityAutoCompleteTextView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/edit_text_border"
+                android:hint="PickUp City"
+                android:text=""/>
         </LinearLayout>
 
+        <LinearLayout
+            android:id="@+id/destinationCityLinearLayout"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_marginTop="10dp"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/destinationCityTextView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@null"
+                android:text="" />
+
+            <EditText
+                android:id="@+id/destinationCityEditText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/edit_text_border"
+                android:cursorVisible="false"
+                android:hint="Destination City"
+                android:text=""
+                android:onClick="destinationCityList"
+                android:clickable="true"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/pickUpDateLinearLayout"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_marginTop="10dp"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/pickUpDateTextView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@null"
+                android:text="" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:weightSum="5">
+            <EditText
+                android:id="@+id/pickUpDateEditText"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="4"
+                android:singleLine="true"
+                android:background="@drawable/edit_text_border"
+                android:hint="Pick Up Date"
+                android:text="" />
+                <ImageButton
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:src="@drawable/calendar"
+                    android:clickable="true"
+                    android:onClick="pickUpDateCalendar"
+                    android:background="@color/calendarBackGround"/>
+            </LinearLayout>
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/returnDateLinearLayout"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_marginTop="10dp"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/returnDateTextView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@null"
+                android:text="" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:weightSum="5">
+                <EditText
+                    android:id="@+id/returnDateEditText"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="4"
+                    android:singleLine="true"
+                    android:background="@drawable/edit_text_border"
+                    android:cursorVisible="false"
+                    android:hint="Return Date"
+                    android:text="" />
+                <ImageButton
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:onClick="returnDateCalendar"
+                    android:clickable="true"
+                    android:background="@color/calendarBackGround"
+                    android:src="@drawable/calendar"/>
+            </LinearLayout>
+        </LinearLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/searchCabButtonLinearLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="10dp">
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Search Cab"
+            android:clickable="true"
+            android:onClick="searchCab"
+            android:textColor="@android:color/white"
+            android:textSize="@dimen/button_text_size"
+            android:background="@drawable/button_drawable"/>
     </LinearLayout>
 
 </RelativeLayout>

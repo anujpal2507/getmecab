@@ -5,18 +5,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
-import android.os.Build;
-import android.support.annotation.BoolRes;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
-import android.util.Patterns;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.EditText;
-import android.widget.Toast;
 
-import com.getmecab.customerapp.Home;
 import com.getmecab.customerapp.R;
 import com.getmecab.customerapp.database.LocalData;
 import com.getmecab.customerapp.database.LocalDataDB;
@@ -38,9 +32,7 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.regex.Pattern;
 
 /**
  * Created by anuj "email : anujpal2507@gmail.com" on 16/9/16.

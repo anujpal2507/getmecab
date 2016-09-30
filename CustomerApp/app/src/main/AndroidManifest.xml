@@ -3,11 +3,13 @@
     package="com.getmecab.customerapp">
 
     <!-- To auto-complete the email text field in the login form with the user's emails -->
+    <uses-permission android:name="android.permission.CALL_PHONE" />
     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
     <uses-permission android:name="android.permission.READ_PROFILE" />
     <uses-permission android:name="android.permission.READ_CONTACTS" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <!--<uses-permission android:name="android.permission.CALL_PHONE"/>-->
 
     <application
         android:allowBackup="true"
@@ -42,9 +44,23 @@
         </receiver>
 
         <activity
-            android:name=".Home"
+            android:name=".activity.Home"
             android:label="@string/title_activity_home"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".global.BookingCalendar"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".activity.CabSearchResult"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".activity.SourceCityList"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".activity.InternetNotAvailable"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar" />
     </application>
 
 </manifest>

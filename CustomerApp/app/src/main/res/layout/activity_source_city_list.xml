@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".activity.SourceCityList">
+
+    <LinearLayout
+        android:id="@+id/searchSourceCityLinearLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:weightSum="5"
+        android:orientation="horizontal">
+
+    <EditText
+        android:id="@+id/searchSourceCityEditText"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="4"
+        android:singleLine="true"
+        android:hint="Source City"
+        android:background="@drawable/edit_text_border"
+        android:text=""
+        android:cursorVisible="false"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:layout_marginLeft="2dp"/>
+
+     <ImageButton
+         android:id="@+id/searchSourceCityButton"
+         android:layout_width="0dp"
+         android:layout_height="wrap_content"
+         android:layout_weight="1"
+         android:src="@drawable/search"
+         android:background="@color/button_back_ground_color1"/>
+    </LinearLayout>
+
+    <ScrollView
+        android:id="@+id/sourceCityScrollView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/searchSourceCityLinearLayout"
+        android:layout_marginTop="5dp"
+        android:layout_marginBottom="10dp">
+        <LinearLayout
+            android:id="@+id/sourceCityListLinearLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"></LinearLayout>
+    </ScrollView>
+    <LinearLayout
+        android:id="@+id/sourceCityParentLinearLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_below="@+id/searchSourceCityLinearLayout"
+        android:layout_marginTop="5dp"
+        android:layout_marginBottom="10dp">
+    <ListView
+        android:id="@+id/sourceCityListView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:divider="@android:color/black"
+        android:dividerHeight="1dp">
+    </ListView>
+    </LinearLayout>
+</RelativeLayout>

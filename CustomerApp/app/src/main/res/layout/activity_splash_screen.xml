@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/appBackGround"
+    android:background="@drawable/gmc"
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context=".activity.SplashScreen"
     android:fillViewport="true">
