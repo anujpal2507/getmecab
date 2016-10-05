@@ -12,4 +12,6 @@ public interface GlobalConstants {
     String TABLE_ONEWAYDATA = "ONEWAYDATA";
     String TABLE_ROUNDTRIPDATA = "ROUNDTRIPDATA";
     String TABLE_USER = "USER";
+    String TABLE_INVENTORY = "INVENTORY";
+    String TABLE_PRICING = "PRICING";
 }

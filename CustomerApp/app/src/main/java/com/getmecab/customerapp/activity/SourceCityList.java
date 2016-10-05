@@ -24,7 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class SourceCityList extends AppCompatActivity {
-
+/*
     Context context;
     TextView cityNameTextView;
     ImageView sourceCityYellowImageView, sourceCityBlueImageView;
@@ -76,7 +76,7 @@ public class SourceCityList extends AppCompatActivity {
                 finish();
             }
         });
-       /* cityNameTextView.setOnTouchListener(new View.OnTouchListener() {
+ cityNameTextView.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View view, MotionEvent motionEvent) {
                 if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
@@ -87,7 +87,8 @@ public class SourceCityList extends AppCompatActivity {
                 }
                 return true;
             }
-        });*/
+        });
+
     }
 
     private void renderSourceCity(List<String> sourceCityList) {
@@ -119,5 +120,5 @@ public class SourceCityList extends AppCompatActivity {
         ListView listView = (ListView) findViewById(R.id.sourceCityListView);
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, R.layout.source_city_row, sourceCityList);
         listView.setAdapter(adapter);
-    }
+    }*/
 }

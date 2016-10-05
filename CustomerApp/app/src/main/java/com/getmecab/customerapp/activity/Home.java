@@ -1,8 +1,12 @@
 package com.getmecab.customerapp.activity;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MotionEvent;
@@ -20,27 +24,52 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
+import android.widget.RadioButton;
 import android.widget.TextView;
 
 import com.getmecab.customerapp.R;
+import com.getmecab.customerapp.database.LocalDataDB;
+import com.getmecab.customerapp.database.OneWayDataDB;
+import com.getmecab.customerapp.database.RoundTripDataDB;
 import com.getmecab.customerapp.global.BookingCalendar;
+import com.getmecab.customerapp.global.GlobalFunctions;
+import com.getmecab.customerapp.global.RequestHandler;
+import com.google.gson.internal.bind.DateTypeAdapter;
 
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.NameValuePair;
+import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.util.EntityUtils;
+
+import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
-public class Home extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, AdapterView.OnItemSelectedListener, View.OnClickListener {
+public class Home extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, AdapterView.OnItemSelectedListener {
 
+    Context context;
     EditText sourceCityEditText, destinationCityEditText, pickUpDateEditText, returnDateEditText;
     TextView sourceCityTextView, destinationCityTextView, pickUpDateTextView, returnDateTextView;
-    Context context;
-    AutoCompleteTextView sourceCityAutoCompleteTextView;
-    ArrayAdapter<String> sourceCityAdapter;
+    AutoCompleteTextView sourceCityAutoCompleteTextView, destinationCityAutoCompleteTextView;
+    RadioButton roundTripRadioButton, oneWayRadioButton, localTripRadioButton;
+    ArrayAdapter<String> sourceCityAdapter, destinationCityAdapter;
+    List<String> sourceCityList = new ArrayList<>();
+    List<String> destinationCityList = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
         context = this;
+        roundTripRadioButton = (RadioButton) findViewById(R.id.home_roundTripRadioButton);
+        oneWayRadioButton = (RadioButton) findViewById(R.id.home_oneWayTripRadioButton);
+        localTripRadioButton = (RadioButton) findViewById(R.id.home_localTripRadioButton);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -123,54 +152,99 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
     @Override
     protected void onStart() {
         super.onStart();
-        final List<String> sourceCityList = new ArrayList<>();
-        sourceCityList.add("DELHI");
-        sourceCityList.add("LUCKNOW");
-        sourceCityList.add("KANPUR");
-        sourceCityList.add("NOIDA");
-        sourceCityList.add("GURGOAN");
-        sourceCityList.add("BANGALORE");
-        sourceCityList.add("MUMBAI");
-        sourceCityList.add("JAIPUR");
-        sourceCityList.add("PUNE");
-        sourceCityList.add("MYSORE");
-        sourceCityList.add("GHAZIABAD");
-        sourceCityList.add("AGRA");
-        sourceCityList.add("CHANDIGARH");
-        sourceCityList.add("CHENNAI");
+        if (roundTripRadioButton.isChecked()) {
+            sourceCityList = new RoundTripDataDB(context).getAllSourceCity();
+        } else if (oneWayRadioButton.isChecked()) {
+            sourceCityList = new OneWayDataDB(context).getAllSourceCity();
+        } else if (localTripRadioButton.isChecked()) {
+            sourceCityList = new LocalDataDB(context).getAllSourceCity();
+        }
         sourceCityAutoCompleteTextView = (AutoCompleteTextView) findViewById(R.id.sourceCityAutoCompleteTextView);
-        sourceCityAdapter = new ArrayAdapter<String>(context , R.layout.support_simple_spinner_dropdown_item);
+        sourceCityTextView = (TextView) findViewById(R.id.sourceCityTextView);
+        sourceCityAdapter = new ArrayAdapter<String>(context, R.layout.support_simple_spinner_dropdown_item);
         sourceCityAdapter.addAll(sourceCityList);
+        for (String city : sourceCityList) {
+            Log.d("sourceCityList", "city >>>" + city);
+        }
         sourceCityAutoCompleteTextView.setThreshold(1);
         sourceCityAutoCompleteTextView.setAdapter(sourceCityAdapter);
+        /*sourceCityAutoCompleteTextView.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View view, MotionEvent motionEvent) {
+                sourceCityAutoCompleteTextView.requestFocus();
+                sourceCityAutoCompleteTextView.setCursorVisible(true);
+                if (!"".equals(sourceCityAutoCompleteTextView.getText()))
+                    sourceCityAutoCompleteTextView.setSelection(sourceCityAutoCompleteTextView.getText().length());
+                if ("".equals(sourceCityTextView.getText()))
+                    sourceCityTextView.setText("Pick Up City");
+                sourceCityAutoCompleteTextView.setHint("");
+                return true;
+            }
+        });*/
         sourceCityAutoCompleteTextView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
-                sourceCityAutoCompleteTextView.setText(sourceCityList.get(position));
+                sourceCityAutoCompleteTextView.setText(adapterView.getItemAtPosition(position).toString());
+                sourceCityAutoCompleteTextView.setError(null);
+                sourceCityAutoCompleteTextView.setCursorVisible(false);
+                if (roundTripRadioButton.isChecked()) {
+                    destinationCityList = new RoundTripDataDB(context).getAllDestinationCityForSourceCity(sourceCityAutoCompleteTextView.getText().toString());
+                } else if (oneWayRadioButton.isChecked()) {
+                    destinationCityList = new OneWayDataDB(context).getAllDestinationCityForSource(sourceCityAutoCompleteTextView.getText().toString());
+                }
+                for (String city : destinationCityList) {
+                    Log.d("destinationCityList", "city >>>" + city);
+                }
+                if (destinationCityList != null && destinationCityList.size() > 0)
+                    destinationCityAdapter.addAll(destinationCityList);
+                destinationCityAutoCompleteTextView.setAdapter(destinationCityAdapter);
             }
         });
-        sourceCityAutoCompleteTextView.setOnItemSelectedListener(this);
-        sourceCityAutoCompleteTextView.setOnClickListener(this);
-        sourceCityEditText = (EditText) findViewById(R.id.sourceCityEditText);
-        sourceCityTextView = (TextView) findViewById(R.id.sourceCityTextView);
-        sourceCityEditText.setOnClickListener(new View.OnClickListener() {
+        sourceCityAutoCompleteTextView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                sourceCityAutoCompleteTextView.setCursorVisible(true);
                 if ("".equals(sourceCityTextView.getText()))
                     sourceCityTextView.setText("Pick Up City");
-                sourceCityEditText.setHint("");
-                Intent intent = new Intent(Home.this, SourceCityList.class);
-                startActivityForResult(intent, 1003);
+                sourceCityAutoCompleteTextView.setHint("");
             }
         });
-        destinationCityEditText = (EditText) findViewById(R.id.destinationCityEditText);
         destinationCityTextView = (TextView) findViewById(R.id.destinationCityTextView);
-        destinationCityEditText.setOnClickListener(new View.OnClickListener() {
+        destinationCityAutoCompleteTextView = (AutoCompleteTextView) findViewById(R.id.destinationCityAutoCompleteTextView);
+        destinationCityAdapter = new ArrayAdapter<String>(context, R.layout.support_simple_spinner_dropdown_item);
+        destinationCityAutoCompleteTextView.setThreshold(1);
+        Log.d("destinationCityAdapter", "getCount >>>" + destinationCityAdapter.getCount());
+        /*destinationCityAutoCompleteTextView.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View view, MotionEvent motionEvent) {
+                destinationCityAutoCompleteTextView.requestFocus();
+                destinationCityAutoCompleteTextView.setCursorVisible(true);
+                if ("".equals(destinationCityTextView.getText())) {
+                    destinationCityTextView.setText("Destination City");
+                }
+                if (!"".equals(destinationCityAutoCompleteTextView.getText())) {
+                    destinationCityAutoCompleteTextView.setSelection(destinationCityAutoCompleteTextView.getText().length());
+                }
+                destinationCityAutoCompleteTextView.setHint("");
+                return true;
+            }
+        });*/
+        destinationCityAutoCompleteTextView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
+                destinationCityAutoCompleteTextView.setText(adapterView.getItemAtPosition(position).toString());
+                destinationCityAutoCompleteTextView.setError(null);
+                destinationCityAutoCompleteTextView.setCursorVisible(false);
+            }
+        });
+        destinationCityAutoCompleteTextView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if ("".equals(destinationCityTextView.getText()))
+                destinationCityAutoCompleteTextView.setCursorVisible(true);
+                if ("".equals(destinationCityTextView.getText())) {
                     destinationCityTextView.setText("Destination City");
-                destinationCityEditText.setHint("");
+                }
+                destinationCityAutoCompleteTextView.setHint("");
             }
         });
         pickUpDateEditText = (EditText) findViewById(R.id.pickUpDateEditText);
@@ -185,7 +259,7 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
                     Intent intent = new Intent(Home.this, BookingCalendar.class);
                     startActivityForResult(intent, 1007);
                 }
-            return true;
+                return true;
             }
         });
         returnDateEditText = (EditText) findViewById(R.id.returnDateEditText);
@@ -207,44 +281,46 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        Log.d("(data != null) "," >>>>"+(data != null));
+        Log.d("(data != null) ", " >>>>" + (data != null));
         super.onActivityResult(requestCode, resultCode, data);
         Bundle bundle = null;
         String receivedData = "";
-        Log.d("(data != null) "," >>>>"+(data != null));
+        Log.d("(data != null) ", " >>>>" + (data != null));
         if (data != null) {
             bundle = data.getExtras();
         }
         if (bundle != null) {
-            receivedData =  bundle.getString("sentData");
+            receivedData = bundle.getString("sentData");
         }
-        if (requestCode == 1003) {
+        /*if (requestCode == 1003) {
             if (resultCode == Activity.RESULT_OK) {
                 sourceCityEditText.setText(receivedData);
             } else if (resultCode == Activity.RESULT_CANCELED) {
                 sourceCityEditText.setText("");
                 sourceCityEditText.setHint("PickUp City");
             }
-        }
+        }*/
         if (requestCode == 1007) {
-                if ("".equals(pickUpDateTextView.getText()))
-                    pickUpDateTextView.setText("Pick Up Date");
-                if (resultCode == Activity.RESULT_OK) {
-                    pickUpDateEditText.setText(receivedData);
-                }
-                if (resultCode == Activity.RESULT_CANCELED) {
-                    pickUpDateEditText.setText("");
-                    pickUpDateEditText.setHint("Pick Up Date");
-                }
+            if ("".equals(pickUpDateTextView.getText()))
+                pickUpDateTextView.setText("Pick Up Date");
+            if (resultCode == Activity.RESULT_OK) {
+                pickUpDateEditText.setText(receivedData);
+                pickUpDateEditText.setError(null);
+            }
+            if (resultCode == Activity.RESULT_CANCELED) {
+                pickUpDateEditText.setText("");
+                pickUpDateEditText.setHint("Pick Up Date");
+            }
         } else if (requestCode == 1009) {
             if ("".equals(returnDateTextView.getText()))
                 returnDateTextView.setText("Return Date");
             if (resultCode == Activity.RESULT_OK) {
                 returnDateEditText.setText(receivedData);
+                returnDateEditText.setError(null);
             }
             if (resultCode == Activity.RESULT_CANCELED) {
                 returnDateEditText.setText("");
-                pickUpDateEditText.setHint("Return Date");
+                returnDateEditText.setHint("Return Date");
             }
         }
     }
@@ -260,8 +336,153 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
     }
 
     public void searchCab(View view) {
-        Intent intent = new Intent(Home.this, CabSearchResult.class);
-        startActivity(intent);
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MMM-yyyy");
+        String[] pickUpDateExtractor = pickUpDateEditText.getText().toString().split(",");
+        String[] returnDateExtractor = returnDateEditText.getText().toString().split(",");
+        Date pickUpDate = new Date();
+        Date returnDate = new Date();
+        String startDate;
+        boolean errorCode = false;
+        SimpleDateFormat startDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        long numberOfDays = 0;
+        try {
+            if (pickUpDateExtractor.length > 1)
+                pickUpDate = dateFormat.parse(pickUpDateExtractor[1].toString());
+            if (returnDateExtractor.length > 1)
+                returnDate = dateFormat.parse(returnDateExtractor[1].toString());
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        numberOfDays = TimeUnit.DAYS.convert((returnDate.getTime() - pickUpDate.getTime()), TimeUnit.MILLISECONDS);
+        Log.d("Home", "numberOfDays >>>" + numberOfDays);
+        startDate = startDateFormat.format(pickUpDate);
+        Log.d("Home", "startDate >>>" + startDate);
+        if ((sourceCityAutoCompleteTextView.getVisibility() == View.VISIBLE && "".equals(sourceCityAutoCompleteTextView.getText().toString().trim())) &&
+                (destinationCityAutoCompleteTextView.getVisibility() == View.VISIBLE && "".equals(destinationCityAutoCompleteTextView.getText().toString().trim())) &&
+                (pickUpDateEditText.getVisibility() == View.VISIBLE && "".equals(pickUpDateEditText.getText().toString().trim())) &&
+                (returnDateEditText.getVisibility() == View.VISIBLE && "".equals(returnDateEditText.getText().toString().trim()))) {
+            sourceCityAutoCompleteTextView.setError("Pickup city required.");
+            destinationCityAutoCompleteTextView.setError("");
+            pickUpDateEditText.setError("");
+            returnDateEditText.setError("");
+            GlobalFunctions.showToast(context, "Please fill the required fields.");
+            errorCode = true;
+        } else {
+            if (sourceCityAutoCompleteTextView.getVisibility() == View.VISIBLE && "".equals(sourceCityAutoCompleteTextView.getText().toString().trim())) {
+                sourceCityAutoCompleteTextView.setFocusable(true);
+                sourceCityAutoCompleteTextView.setError("Pickup city required.");
+                sourceCityAutoCompleteTextView.requestFocus();
+                errorCode = true;
+            }
+            if (destinationCityAutoCompleteTextView.getVisibility() == View.VISIBLE && "".equals(destinationCityAutoCompleteTextView.getText().toString().trim())) {
+                destinationCityAutoCompleteTextView.setFocusable(true);
+                destinationCityAutoCompleteTextView.setError("Destination city required.");
+                destinationCityAutoCompleteTextView.requestFocus();
+                errorCode = true;
+            }
+            if (pickUpDateEditText.getVisibility() == View.VISIBLE && "".equals(pickUpDateEditText.getText().toString().trim())) {
+                pickUpDateEditText.setFocusable(true);
+                pickUpDateEditText.setError("Pickup date required.");
+                pickUpDateEditText.requestFocus();
+                errorCode = true;
+            }
+            if (returnDateEditText.getVisibility() == View.VISIBLE && "".equals(returnDateEditText.getText().toString().trim())) {
+                returnDateEditText.setFocusable(true);
+                returnDateEditText.setError("Return date required.");
+                returnDateEditText.requestFocus();
+                errorCode = true;
+            }
+        }
+        if (!errorCode) {
+            SearchCabs searchCabs;
+            if (roundTripRadioButton.isChecked()) {
+                searchCabs = new SearchCabs(sourceCityAutoCompleteTextView.getText().toString().trim(), destinationCityAutoCompleteTextView.getText().toString().trim(),
+                       Long.toString(numberOfDays), pickUpDateEditText.getText().toString().trim());
+            } else if (oneWayRadioButton.isChecked()) {
+                searchCabs = new SearchCabs(sourceCityAutoCompleteTextView.getText().toString().trim(), destinationCityAutoCompleteTextView.getText().toString().trim(),
+                        "1", pickUpDateEditText.getText().toString().trim());
+            } else {                            //local trip
+                searchCabs = new SearchCabs(sourceCityAutoCompleteTextView.getText().toString().trim(), null, "1", pickUpDateEditText.getText().toString().trim());
+            }
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+                searchCabs.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+            } else {
+                searchCabs.execute();
+            }
+        }
+    }
+
+    private class SearchCabs extends AsyncTask<String, Boolean, Boolean> {
+        String pickUpCity, destinationCity, numberOfDays, pickUpDate, tripType, availableCabs;
+        ProgressDialog progressDialog;
+        HttpResponse httpResponse;
+
+        SearchCabs(String pickUpCity, String destinationCity, String numberOfDays, String pickUpDate) {
+            this.pickUpCity = pickUpCity;
+            this.destinationCity = destinationCity;
+            this.numberOfDays = numberOfDays;
+            this.pickUpDate = pickUpDate;
+            if (roundTripRadioButton.isChecked()) {
+                tripType = "round-trip";
+            } else if (oneWayRadioButton.isChecked()) {
+                tripType = "one-way";
+            } else if (localTripRadioButton.isChecked()) {
+                tripType = "local";
+            }
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            progressDialog = new ProgressDialog(context);
+            progressDialog.setTitle("Searching Cabs");
+            progressDialog.setMessage("Please wait...");
+            progressDialog.setCancelable(false);
+            progressDialog.show();
+        }
+
+        @Override
+        protected Boolean doInBackground(String... strings) {
+            List<NameValuePair> params = new ArrayList<>();
+            int statusCode = 403;
+            params.add(new BasicNameValuePair("source", pickUpCity));
+            params.add(new BasicNameValuePair("destination", destinationCity));
+            params.add(new BasicNameValuePair("type", tripType));
+            params.add(new BasicNameValuePair("days", numberOfDays));
+            params.add(new BasicNameValuePair("start_date", pickUpDate));
+            httpResponse = RequestHandler.makeRequest(context, GlobalFunctions.getUrl("SEARCH_CABS"), params);
+            if (httpResponse != null) {
+                statusCode = httpResponse.getStatusLine().getStatusCode();
+                if (statusCode == 200) {
+                    try {
+                        availableCabs = EntityUtils.toString(httpResponse.getEntity(), "UTF-8");
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                        availableCabs = null;
+                    }
+                    Log.d("Home", "availableCabs >>>" + availableCabs);
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        @Override
+        protected void onPostExecute(Boolean aBoolean) {
+            super.onPostExecute(aBoolean);
+            if (progressDialog != null && progressDialog.isShowing())
+                progressDialog.dismiss();
+            if (aBoolean) {
+                if (availableCabs == null) {
+                    GlobalFunctions.showToast(context, "Sorry no cabs available for searched route. Please retry with different route.");
+                } else {
+                    Intent intent = new Intent(Home.this, CabSearchResult.class);
+                    intent.putExtra("availableCabs", availableCabs);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    startActivity(intent);
+                }
+            }
+        }
     }
 
     @Override
@@ -273,10 +494,5 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
     public void onNothingSelected(AdapterView<?> adapterView) {
         InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
         inputMethodManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
-    }
-
-    @Override
-    public void onClick(View view) {
-
     }
 }

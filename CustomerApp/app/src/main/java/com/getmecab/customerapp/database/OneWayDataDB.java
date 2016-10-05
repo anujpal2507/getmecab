@@ -6,6 +6,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 import android.widget.LinearLayout;
 
 import com.getmecab.customerapp.global.GlobalConstants;
@@ -87,6 +88,66 @@ public class OneWayDataDB extends SQLiteOpenHelper implements GlobalConstants {
             }
         }
         return oneWayDataList;
+    }
+
+    public ArrayList<String> getAllSourceCity() {
+        String selectQuery = "SELECT DISTINCT " + source + " FROM " + TABLE_ONEWAYDATA;
+        Log.i("OneWayDataDB ", "getAllSourceCity selectQuery >>>"+selectQuery);
+        SQLiteDatabase db = null;
+        Cursor cursor = null;
+        ArrayList<String> sourceCities = null;
+        try {
+            db = this.getReadableDatabase();
+            cursor = db.rawQuery(selectQuery, null);
+            if (cursor != null && cursor.moveToFirst()) {
+                sourceCities = new ArrayList<>();
+                do {
+                    sourceCities.add(cursor.getString(0));
+                } while (cursor.moveToNext());
+            }
+        } catch (Exception e) {
+        }
+        finally {
+            if (cursor != null) {
+                cursor.close();
+                cursor = null;
+            }
+            if (db != null) {
+                db.close();
+                db = null;
+            }
+        }
+        return sourceCities;
+    }
+
+    public ArrayList<String> getAllDestinationCityForSource(String sourceCity) {
+        String selectQuery = "SELECT DISTINCT " + destination + " FROM " + TABLE_ONEWAYDATA + " WHERE " + source + " = '" + sourceCity + "'";
+        Log.i("OneWayDataDB ", "getAllDestinationCityForSource selectQuery >>>"+selectQuery);
+        SQLiteDatabase db = null;
+        Cursor cursor = null;
+        ArrayList<String> destinationCities = null;
+        try {
+            db = this.getReadableDatabase();
+            cursor = db.rawQuery(selectQuery, null);
+            if (cursor != null && cursor.moveToFirst()) {
+                destinationCities = new ArrayList<>();
+                do {
+                    destinationCities.add(cursor.getString(0));
+                } while (cursor.moveToNext());
+            }
+        } catch (Exception e) {
+
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+                cursor = null;
+            }
+            if (db != null) {
+                db.close();
+                db = null;
+            }
+        }
+        return destinationCities;
     }
 
     private OneWayData setOneWayDataFromCursor(OneWayData oneWayData, Cursor cursor) {

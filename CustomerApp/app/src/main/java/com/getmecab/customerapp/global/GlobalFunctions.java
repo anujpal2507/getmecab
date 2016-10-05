@@ -16,6 +16,8 @@ public class GlobalFunctions {
         switch (urlName) {
             case "SIGN_UP_USER" :
                 return GlobalFunctions.PROTOCOL + "://" + GlobalFunctions.DOMAIN + ":" + GlobalFunctions.PORT + "/api/mobile/user/put";
+            case "SEARCH_CABS" :
+                return GlobalFunctions.PROTOCOL + "://" + GlobalFunctions.DOMAIN + ":" + GlobalFunctions.PORT + "/api/cab_inventory";
             default:
                 return null;
         }

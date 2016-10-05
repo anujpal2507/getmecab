@@ -15,7 +15,8 @@
         completions."
     </string>
     <string name="title_activity_home"></string>
-
+    <string name="global_shared_preference_key_file">com.getmecab.customerapp.PREFERENCE_FILE_KEY</string>
+    <string name="isLogging_session_alive">Is Login Session Alive</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
 

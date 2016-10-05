@@ -1,15 +1,20 @@
 package com.getmecab.customerapp.activity;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
+import android.util.Patterns;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 
 import com.getmecab.customerapp.R;
 import com.getmecab.customerapp.database.LocalData;
@@ -79,10 +84,10 @@ public class SignUp extends Activity {
     }
 
     public void registerNewUser(View view) {
-        Intent intent = new Intent(SignUp.this, Home.class);
+       /* Intent intent = new Intent(SignUp.this, Home.class);
         startActivity(intent);
-        finish();
-        /*if (termsConditions.isChecked()) {
+        finish();*/
+        if (termsConditions.isChecked()) {
             String name, emailId, phoneNumber, userPassword, confirmUserPassword;
             boolean isCorrectEntries = true;
             name = fullName.getText().toString();
@@ -116,19 +121,30 @@ public class SignUp extends Activity {
             }
         } else {
             GlobalFunctions.showToast(context, "Please confirm terms and conditions!!!");
-        }*/
+        }
     }
 
     private class RegisterUser extends AsyncTask<String, String, Boolean> {
         String newUserfullName, newUserEmailId, newUserPhoneNumber, newUserPassword;
         int statusCode = 401;
         String masterData = null;
+        ProgressDialog progressDialog;
 
         public RegisterUser(String name, String emailId, String phoneNumber, String userPassword) {
             newUserfullName = name;
             newUserEmailId = emailId;
             newUserPhoneNumber = phoneNumber;
             newUserPassword = userPassword;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            progressDialog = new ProgressDialog(context);
+            progressDialog.setTitle("Registering New User");
+            progressDialog.setMessage("Please wait...");
+            progressDialog.setCancelable(false);
+            progressDialog.show();
         }
 
         @Override
@@ -169,7 +185,13 @@ public class SignUp extends Activity {
                 password.setText("");
                 confirmPassword.setText("");
                 termsConditions.setChecked(false);
+                SharedPreferences sharedPreferences = context.getSharedPreferences(context.getString(R.string.global_shared_preference_key_file), MODE_PRIVATE);
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+                editor.putBoolean(getString(R.string.isLogging_session_alive), true);
+                editor.apply();
                 GlobalFunctions.showToast(context, "Congratulations your are successfully registered.");
+                if (progressDialog != null && progressDialog.isShowing())
+                    progressDialog.dismiss();
                 Intent intent = new Intent(SignUp.this, Home.class);
                 startActivity(intent);
                 finish();
@@ -223,9 +245,9 @@ public class SignUp extends Activity {
                 JSONArray jsonArray = jsonObject.getJSONArray("result");
                 if (jsonArray.length() != 0) {
                     List<LocalData> localDataList = new ArrayList<>();
-                    LocalData localData = new LocalData();
                     JSONObject localDataJsonObject;
                     for (int i = 0; i < jsonArray.length(); i++) {
+                        LocalData localData = new LocalData();
                         localDataJsonObject = jsonArray.getJSONObject(i);
                         localData.setSource(localDataJsonObject.getString("source"));
                         localData.setDestination(localDataJsonObject.getString("destination"));
@@ -248,9 +270,9 @@ public class SignUp extends Activity {
                 JSONArray jsonArray = jsonObject.getJSONArray("result");
                 if (jsonArray.length() != 0) {
                     List<OneWayData> oneWayDataList = new ArrayList<>();
-                    OneWayData oneWayData = new OneWayData();
                     JSONObject oneWayDatatJsonObject;
                     for (int i = 0 ; i < jsonArray.length(); i++) {
+                        OneWayData oneWayData = new OneWayData();
                         oneWayDatatJsonObject = jsonArray.getJSONObject(i);
                         oneWayData.setSource(oneWayDatatJsonObject.getString("source"));
                         oneWayData.setDestination(oneWayDatatJsonObject.getString("destination"));
@@ -272,10 +294,10 @@ public class SignUp extends Activity {
             if (jsonObject.length() != 0) {
                 JSONArray jsonArray = jsonObject.getJSONArray("result");
                 if (jsonArray.length() != 0) {
-                    List<RoundTripData> roundTripDataList = new ArrayList<>();
-                    RoundTripData roundTripData = new RoundTripData();
+                    ArrayList<RoundTripData> roundTripDataList = new ArrayList<>();
                     JSONObject roundTripDataJsonObject;
                     for (int i = 0; i < jsonArray.length(); i++) {
+                        RoundTripData roundTripData = new RoundTripData();
                         roundTripDataJsonObject = jsonArray.getJSONObject(i);
                         roundTripData.setSource(roundTripDataJsonObject.getString("source"));
                         roundTripData.setDestination(roundTripDataJsonObject.getString("destination"));

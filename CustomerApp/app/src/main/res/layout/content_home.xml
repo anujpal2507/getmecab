@@ -4,14 +4,14 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/homeBackGround"
     android:paddingBottom="@dimen/activity_vertical_margin"
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context=".activity.Home"
-    tools:showIn="@layout/app_bar_home"
-    android:background="@color/homeBackGround">
+    tools:showIn="@layout/app_bar_home">
 
     <LinearLayout
         android:id="@+id/home_tripRadioLinearLayout"
@@ -38,7 +38,7 @@
                 android:checked="true"
                 android:paddingLeft="5dp"
                 android:paddingRight="5dp"
-                android:text="Round-Trip&#160;&#160;&#160;&#160;"/>
+                android:text="Round-Trip&#160;&#160;&#160;&#160;" />
 
             <RadioButton
                 android:id="@+id/home_oneWayTripRadioButton"
@@ -49,7 +49,7 @@
                 android:checked="false"
                 android:paddingLeft="5dp"
                 android:paddingRight="5dp"
-                android:text="One-Way&#160;&#160;&#160;&#160;&#160;&#160;&#160;"/>
+                android:text="One-Way&#160;&#160;&#160;&#160;&#160;&#160;&#160;" />
 
             <RadioButton
                 android:id="@+id/home_localTripRadioButton"
@@ -64,170 +64,201 @@
         </RadioGroup>
     </LinearLayout>
 
-    <LinearLayout
-        android:id="@+id/searchCabLinearLayout"
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="50dp"
-        android:orientation="vertical"
-        android:weightSum="3">
+        android:layout_height="match_parent"
+        android:layout_below="@id/home_tripRadioLinearLayout"
+        android:layout_marginTop="20dp">
 
         <LinearLayout
-            android:id="@+id/sourceCityLinearLayout"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_marginTop="5dp"
-            android:layout_weight="1"
-            android:orientation="vertical">
-
-            <TextView
-                android:id="@+id/sourceCityTextView"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@null"
-                android:text="" />
-
-            <EditText
-                android:id="@+id/sourceCityEditText"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@drawable/edit_text_border"
-                android:cursorVisible="false"
-                android:hint="PickUp City"
-                android:text=""
-                android:onClick="sourceCityList"
-                android:clickable="true"/>
-
-            <AutoCompleteTextView
-                android:id="@+id/sourceCityAutoCompleteTextView"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@drawable/edit_text_border"
-                android:hint="PickUp City"
-                android:text=""/>
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/destinationCityLinearLayout"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_marginTop="10dp"
-            android:layout_weight="1"
-            android:orientation="vertical">
-
-            <TextView
-                android:id="@+id/destinationCityTextView"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@null"
-                android:text="" />
-
-            <EditText
-                android:id="@+id/destinationCityEditText"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@drawable/edit_text_border"
-                android:cursorVisible="false"
-                android:hint="Destination City"
-                android:text=""
-                android:onClick="destinationCityList"
-                android:clickable="true"/>
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/pickUpDateLinearLayout"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_marginTop="10dp"
-            android:layout_weight="1"
-            android:orientation="vertical">
-
-            <TextView
-                android:id="@+id/pickUpDateTextView"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@null"
-                android:text="" />
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:weightSum="5">
-            <EditText
-                android:id="@+id/pickUpDateEditText"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="4"
-                android:singleLine="true"
-                android:background="@drawable/edit_text_border"
-                android:hint="Pick Up Date"
-                android:text="" />
-                <ImageButton
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:src="@drawable/calendar"
-                    android:clickable="true"
-                    android:onClick="pickUpDateCalendar"
-                    android:background="@color/calendarBackGround"/>
-            </LinearLayout>
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/returnDateLinearLayout"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_marginTop="10dp"
-            android:layout_weight="1"
-            android:orientation="vertical">
-
-            <TextView
-                android:id="@+id/returnDateTextView"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@null"
-                android:text="" />
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:weightSum="5">
-                <EditText
-                    android:id="@+id/returnDateEditText"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="4"
-                    android:singleLine="true"
-                    android:background="@drawable/edit_text_border"
-                    android:cursorVisible="false"
-                    android:hint="Return Date"
-                    android:text="" />
-                <ImageButton
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:onClick="returnDateCalendar"
-                    android:clickable="true"
-                    android:background="@color/calendarBackGround"
-                    android:src="@drawable/calendar"/>
-            </LinearLayout>
-        </LinearLayout>
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/searchCabButtonLinearLayout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_marginBottom="10dp">
-        <Button
+            android:id="@+id/searchCabLinearLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Search Cab"
-            android:clickable="true"
-            android:onClick="searchCab"
-            android:textColor="@android:color/white"
-            android:textSize="@dimen/button_text_size"
-            android:background="@drawable/button_drawable"/>
-    </LinearLayout>
+            android:orientation="vertical"
+            android:weightSum="3">
 
+            <LinearLayout
+                android:id="@+id/sourceCityLinearLayout"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_marginTop="5dp"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/sourceCityTextView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@null"
+                    android:text="" />
+
+                <!--<EditText
+                    android:id="@+id/sourceCityEditText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/edit_text_border"
+                    android:clickable="true"
+                    android:cursorVisible="false"
+                    android:hint="PickUp City"
+                    android:onClick="sourceCityList"
+                    android:text="" />-->
+
+                <AutoCompleteTextView
+                    android:id="@+id/sourceCityAutoCompleteTextView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/edit_text_border"
+                    android:dropDownAnchor="@id/sourceCityAutoCompleteTextView"
+                    android:hint="PickUp City"
+                    android:singleLine="true"
+                    android:textCursorDrawable="@null"
+                    android:focusableInTouchMode="true"
+                    android:inputType="text"
+                    android:text="">
+                </AutoCompleteTextView>
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/destinationCityLinearLayout"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_marginTop="10dp"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/destinationCityTextView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@null"
+                    android:text="" />
+
+                <!--<EditText
+                    android:id="@+id/destinationCityEditText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/edit_text_border"
+                    android:clickable="true"
+                    android:cursorVisible="false"
+                    android:hint="Destination City"
+                    android:onClick="destinationCityList"
+                    android:text="" />-->
+
+                <AutoCompleteTextView
+                    android:id="@+id/destinationCityAutoCompleteTextView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/edit_text_border"
+                    android:dropDownAnchor="@id/destinationCityAutoCompleteTextView"
+                    android:hint="Destination City"
+                    android:singleLine="true"
+                    android:textCursorDrawable="@null"
+                    android:focusableInTouchMode="true"
+                    android:text="">
+                </AutoCompleteTextView>
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/pickUpDateLinearLayout"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_marginTop="10dp"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/pickUpDateTextView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@null"
+                    android:text="" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:weightSum="5">
+
+                    <EditText
+                        android:id="@+id/pickUpDateEditText"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="4"
+                        android:background="@drawable/edit_text_border"
+                        android:hint="Pick Up Date"
+                        android:singleLine="true"
+                        android:text="" />
+
+                    <ImageButton
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:background="@color/calendarBackGround"
+                        android:clickable="true"
+                        android:onClick="pickUpDateCalendar"
+                        android:src="@drawable/calendar" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/returnDateLinearLayout"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_marginTop="10dp"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/returnDateTextView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@null"
+                    android:text="" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:weightSum="5">
+
+                    <EditText
+                        android:id="@+id/returnDateEditText"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="4"
+                        android:background="@drawable/edit_text_border"
+                        android:cursorVisible="false"
+                        android:hint="Return Date"
+                        android:singleLine="true"
+                        android:text="" />
+
+                    <ImageButton
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:background="@color/calendarBackGround"
+                        android:clickable="true"
+                        android:onClick="returnDateCalendar"
+                        android:src="@drawable/calendar" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/searchCabButtonLinearLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_marginBottom="10dp"
+                android:layout_marginTop="50dp">
+
+                <Button
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/button_drawable"
+                    android:clickable="true"
+                    android:onClick="searchCab"
+                    android:text="Search Cab"
+                    android:textColor="@android:color/white"
+                    android:textSize="@dimen/button_text_size" />
+            </LinearLayout>
+        </LinearLayout>
+    </ScrollView>
 </RelativeLayout>

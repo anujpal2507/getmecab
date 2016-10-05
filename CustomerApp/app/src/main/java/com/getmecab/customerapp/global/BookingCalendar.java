@@ -30,7 +30,7 @@ public class BookingCalendar extends AppCompatActivity {
                     int dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK);
                     String selectedDay = dayName(dayOfWeek);
                     String selectedMonth = monthName(month);
-                    String selectedDate = selectedDay + " " + selectedMonth + " " + date + " ," + year;
+                    String selectedDate = selectedDay + "," + date + "-" + selectedMonth + "-" + year;
                     Log.d("selectedDate ", selectedDate);
                     Intent intent = new Intent();
                     intent.putExtra("sentData", selectedDate);
@@ -45,25 +45,25 @@ public class BookingCalendar extends AppCompatActivity {
         String selectedDay;
         switch (dayOfWeek) {
             case 1 :
-                selectedDay = "Sunday";
+                selectedDay = "Sun";
                 break;
             case 2 :
-                selectedDay = "Monday";
+                selectedDay = "Mon";
                 break;
             case 3 :
-                selectedDay = "Tuesday";
+                selectedDay = "Tue";
                 break;
             case 4 :
-                selectedDay = "Wednesday";
+                selectedDay = "Wed";
                 break;
             case 5 :
-                selectedDay = "Thursday";
+                selectedDay = "Thu";
                 break;
             case 6 :
-                selectedDay = "Friday";
+                selectedDay = "Fri";
                 break;
             case 7 :
-                selectedDay = "Saturday";
+                selectedDay = "Sat";
                 break;
             default:
                 selectedDay = "";
@@ -76,40 +76,40 @@ public class BookingCalendar extends AppCompatActivity {
         String selectedMonth;
         switch (month) {
             case 0 :
-                selectedMonth = "January";
+                selectedMonth = "Jan";
                 break;
             case 1 :
-                selectedMonth = "February";
+                selectedMonth = "Feb";
                 break;
             case 2 :
-                selectedMonth = "March";
+                selectedMonth = "Mar";
                 break;
             case 3 :
-                selectedMonth = "April";
+                selectedMonth = "Apr";
                 break;
             case 4 :
                 selectedMonth = "May";
                 break;
             case 5 :
-                selectedMonth = "June";
+                selectedMonth = "Jun";
                 break;
             case 6 :
-                selectedMonth = "July";
+                selectedMonth = "Jul";
                 break;
             case 7 :
-                selectedMonth = "August";
+                selectedMonth = "Aug";
                 break;
             case 8 :
-                selectedMonth = "September";
+                selectedMonth = "Sep";
                 break;
             case 9 :
-                selectedMonth = "October";
+                selectedMonth = "Oct";
                 break;
             case 10 :
-                selectedMonth = "November";
+                selectedMonth = "Nov";
                 break;
             case 11 :
-                selectedMonth = "December";
+                selectedMonth = "Dec";
                 break;
             default:
                 selectedMonth = "";

@@ -5,6 +5,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.widget.ArrayAdapter;
 
 import com.getmecab.customerapp.global.GlobalConstants;
 
@@ -97,6 +98,34 @@ public class LocalDataDB extends SQLiteOpenHelper implements GlobalConstants {
         }
         return localDataList;
     }
+
+    public ArrayList<String> getAllSourceCity() {
+        String selectQuery = "SELECT DISTINCT " + source + " FROM " + TABLE_LOCALDATA;
+        SQLiteDatabase db = null;
+        Cursor cursor = null;
+        ArrayList<String> sourceCities = null;
+        try {
+            db = this.getReadableDatabase();
+            cursor = db.rawQuery(selectQuery, null);
+            if (cursor != null && cursor.moveToFirst()) {
+                sourceCities = new ArrayList<>();
+                do {
+                    sourceCities.add(cursor.getString(0));
+                } while (cursor.moveToNext());
+            }
+        } catch (Exception e){
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+                cursor = null;
+            }
+            if (db != null) {
+                db.close();
+                db = null;
+            }
+        }
+        return sourceCities;
+     }
 
     private LocalData setLocalDataFromCursor(LocalData localData, Cursor cursor) {
         localData.setSource(cursor.getString(1));
