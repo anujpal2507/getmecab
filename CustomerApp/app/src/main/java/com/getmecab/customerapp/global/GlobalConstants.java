@@ -14,4 +14,5 @@ public interface GlobalConstants {
     String TABLE_USER = "USER";
     String TABLE_INVENTORY = "INVENTORY";
     String TABLE_PRICING = "PRICING";
+    String TABLE_CABS = "CABS";
 }

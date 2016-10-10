@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.PersistableBundle;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
@@ -27,9 +28,16 @@ import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.TextView;
 
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.getmecab.customerapp.R;
+import com.getmecab.customerapp.database.CabDTO;
 import com.getmecab.customerapp.database.LocalDataDB;
 import com.getmecab.customerapp.database.OneWayDataDB;
+import com.getmecab.customerapp.database.Pricing;
+import com.getmecab.customerapp.database.PricingDB;
+import com.getmecab.customerapp.database.PricingObjectDTO;
 import com.getmecab.customerapp.database.RoundTripDataDB;
 import com.getmecab.customerapp.global.BookingCalendar;
 import com.getmecab.customerapp.global.GlobalFunctions;
@@ -41,8 +49,12 @@ import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -61,6 +73,7 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
     ArrayAdapter<String> sourceCityAdapter, destinationCityAdapter;
     List<String> sourceCityList = new ArrayList<>();
     List<String> destinationCityList = new ArrayList<>();
+    ArrayList<Pricing> pricingArrayList = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -336,6 +349,12 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
     }
 
     public void searchCab(View view) {
+       /* Bundle bundle = new Bundle();
+        Intent intent = new Intent(Home.this, CabSearchResult.class);
+        bundle.putSerializable("pricingArrayList", new ArrayList<Pricing>());
+        intent.putExtras(bundle);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(intent);*/
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MMM-yyyy");
         String[] pickUpDateExtractor = pickUpDateEditText.getText().toString().split(",");
         String[] returnDateExtractor = returnDateEditText.getText().toString().split(",");
@@ -413,7 +432,7 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
     }
 
     private class SearchCabs extends AsyncTask<String, Boolean, Boolean> {
-        String pickUpCity, destinationCity, numberOfDays, pickUpDate, tripType, availableCabs;
+        String pickUpCity, destinationCity, numberOfDays, pickUpDate, tripType, availableCabs = "";
         ProgressDialog progressDialog;
         HttpResponse httpResponse;
 
@@ -435,7 +454,7 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
         protected void onPreExecute() {
             super.onPreExecute();
             progressDialog = new ProgressDialog(context);
-            progressDialog.setTitle("Searching Cabs");
+            progressDialog.setTitle("Searching CabDTO");
             progressDialog.setMessage("Please wait...");
             progressDialog.setCancelable(false);
             progressDialog.show();
@@ -456,6 +475,10 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
                 if (statusCode == 200) {
                     try {
                         availableCabs = EntityUtils.toString(httpResponse.getEntity(), "UTF-8");
+                        if (!availableCabs.equals("")) {
+                            pricingArrayList = searchCabJsonToObject(availableCabs);
+                            Log.d("Home", "pricingArrayList size >>>" + pricingArrayList.size());
+                        }
                     } catch (IOException e) {
                         e.printStackTrace();
                         availableCabs = null;
@@ -473,16 +496,59 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
             if (progressDialog != null && progressDialog.isShowing())
                 progressDialog.dismiss();
             if (aBoolean) {
-                if (availableCabs == null) {
+                if (availableCabs == null || availableCabs.equals("")) {
                     GlobalFunctions.showToast(context, "Sorry no cabs available for searched route. Please retry with different route.");
                 } else {
                     Intent intent = new Intent(Home.this, CabSearchResult.class);
-                    intent.putExtra("availableCabs", availableCabs);
+//                    Bundle bundle  = new Bundle();
+//                    bundle.putSerializable("pricingArrayList", pricingArrayList);
+                    intent.putExtra("pricingArrayList", pricingArrayList);
+//                    intent.putExtra("Bundle", bundle);
                     intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     startActivity(intent);
                 }
             }
         }
+    }
+
+    private ArrayList<Pricing> searchCabJsonToObject(String jsonString) {
+        ArrayList<Pricing> pricings = new ArrayList<>();
+        try {
+            JSONObject jsonObject = new JSONObject(jsonString);
+            JSONObject cabsObject = jsonObject.getJSONObject("cabs");
+            CabDTO cabDTO = new CabDTO();
+            cabDTO.setSource(cabsObject.getString("source"));
+            cabDTO.setDistance(cabsObject.getString("distance"));
+            cabDTO.setRoute_id(cabsObject.getString("route_id"));
+            cabDTO.setTime(cabsObject.getString("time"));
+            ObjectMapper objectMapper = new ObjectMapper();
+            JSONArray pricingJsonArray = jsonObject.getJSONArray("pricing");
+            Pricing[] pricingObjectDTOs = objectMapper.readValue(pricingJsonArray.toString(), Pricing[].class);
+            for (Pricing pricing : pricingObjectDTOs) {
+                if (!(pricing.getExclusive_estimate() == 0d))
+                    pricings.add(pricing);
+            }
+            Log.d("Home", "pricings size >>>" + pricings.size());
+/*boolean savePricingResponse = new PricingDB(context).addPricing(pricingObjectDTO.getPricing(), null);
+            if (!savePricingResponse) {
+                Log.i("Error", "Unable to save pricing object");
+            }*/
+        } catch (JSONException e) {
+            e.printStackTrace();
+        } catch (JsonParseException e) {
+            e.printStackTrace();
+        } catch (JsonMappingException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return pricings;
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle bundle) {
+        super.onSaveInstanceState(bundle);
+        bundle.putSerializable("PricingArrayList", pricingArrayList);
     }
 
     @Override
